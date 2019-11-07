@@ -14,17 +14,25 @@ def home(request):
         sentences.delete()
         homeform =HomeForm(request.POST)
         if homeform.is_valid():
-            homeform.save()
+            homeform.save()    
     homeform = HomeForm()
     if num==[]:
-        sentences = []
+        sentenceslist = []
         num.append(1)
     else:
-        sentences = list(Sentence.objects.all())
+        sentenceslist = list(Sentence.objects.all())
     sen = ""
-    if sentences:
-        sen = sentences[0]
-    splits = str(sen).split(" ")
+    if sentenceslist:
+        sen = str(sentenceslist[0])
+    if request.method == "GET":
+        corrs = list(request.GET.items())
+        for sugg in corrs:
+            corr = sugg[0].split(",")
+            sen = sen.replace(corr[0],corr[1])
+        sentences.delete()
+        newsentence = Sentence(sen_text=sen)
+        newsentence.save()
+    splits = sen.split(" ")
     suggs = {}
     for word in splits:
         ans = giveSuggestions(word)

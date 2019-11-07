@@ -53,8 +53,14 @@ def giveSuggestions(word):
     #print(candidates(a))
     #end = time.time()
     #print(end-start)
-    word = word.lower()
-    if word in WORDS.keys() or word == "":
-        return []
+    modword = word.lower()
+    modlist = []
+    if modword in WORDS.keys() or modword == "":
+        return modlist
     else:
-        return candidates(word)
+        modlist = candidates(modword)
+    if word.isupper():
+        modlist = [x.upper() for x in modlist]
+    elif word[0].isupper():
+        modlist = [x[0].upper()+x[1:] for x in modlist]
+    return modlist

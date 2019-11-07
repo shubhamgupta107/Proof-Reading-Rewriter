@@ -8,7 +8,12 @@
 		<h3>{{ s }}</h3>
 		<ul>
 			{% for x in v %}
-			<li>{{ x }}</li>
+			<li>
+				<form method="GET">
+					<input name="{{ s }},{{ x }}" hidden>
+					<button type="submit" value='correct,{{ s }},{{ x }}'>{{ x }}</button>
+				</form>
+			</li>
 			{% endfor %}
 		</ul>
 	{% endfor %}
