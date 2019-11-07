@@ -28,7 +28,7 @@ def home(request):
         corrs = list(request.GET.items())
         for sugg in corrs:
             corr = sugg[0].split(",")
-            sen = sen.replace(corr[0],corr[1])
+            sen = sen.replace(corr[0],corr[1],1)
         sentences.delete()
         newsentence = Sentence(sen_text=sen)
         newsentence.save()
