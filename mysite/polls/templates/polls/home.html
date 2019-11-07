@@ -1,0 +1,16 @@
+<form method="POST"> {% csrf_token %}
+	{{ form.as_p }}
+	<input type="submit" value="Submit">
+</form>
+<center><h2>{{ sen }}</h2></center>
+{% if suggestions %}
+	{% for s,v in suggestions %}
+		<h3>{{ s }}</h3>
+		<ul>
+			{% for x in v %}
+			<li>{{ x }}</li>
+			{% endfor %}
+		</ul>
+	{% endfor %}
+{% endif %}
+
