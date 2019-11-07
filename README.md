@@ -1,2 +1,2 @@
 # Proof-Reading-Rewriter
-Proof reads the given piece of text and suggests correction
+Proof-Reads the given piece of text and suggests spelling corrections
