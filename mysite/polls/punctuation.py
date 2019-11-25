@@ -50,9 +50,15 @@ def correct_sentence(initial):
 				if(word=='!'):
 					s=s+'! '
 					j=-1;
+					ques=False
+					another_ques_occur=False
+					ques_occur=False
 				else:
 					s=s+'. '
 					j=-1;
+					ques=False
+					another_ques_occur=False
+					ques_occur=False
 		if(j==0):
 			s = s+word
 		elif(not(word=='.'or word=='?' or word=='!')):
