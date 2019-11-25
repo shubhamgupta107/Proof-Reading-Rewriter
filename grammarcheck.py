@@ -4,44 +4,28 @@ import nltk
 import re
 from nltk.stem.wordnet import WordNetLemmatizer as wn
 from word_forms.word_forms import get_word_forms
-# from threading import Thread
-# from multiprocessing.pool import ThreadPool
 import time
-# class ThreadWithReturnValue(Thread):
-#     def __init__(self, group=None, target=None, name=None,
-#                  args=(), kwargs={}, Verbose=None):
-#         Thread.__init__(self, group, target, name, args, kwargs)
-#         self._return = None
-#     def run(self):
-#         print(type(self._target))
-#         if self._target is not None:
-#             self._return = self._target(*self._args,
-#                                                 **self._kwargs)
-#     def join(self, *args):
-#         Thread.join(self, *args)
-#         return self._return
-# from pattern.en import lexeme
-def api(s,mode=1):
+
+def api(s,mode=1,string=""):
+    # print(s)
     encoded_query = urllib.parse.quote(s)
-    params = {'corpus': 'eng-us', 'query': encoded_query, 'topk': 4}
+    params = {'corpus': 'eng-us', 'query': encoded_query, 'topk': 3}
     params = '&'.join('{}={}'.format(name, value) for name, value in params.items())
     response = requests.get('https://api.phrasefinder.io/search?' + params)
     assert response.status_code == 200
     if(mode==1):
         if(response.json()['phrases']):
-            # print(response.json()['phrases'][0]['tks'])
-            out = [i['tt'] for i in response.json()['phrases'][0]['tks'] if i['tg']==2]
+            out = [i['tt'] for i in response.json()['phrases'][0]['tks'] if i['tg']==2 or i['tg']==1]
             return out
         else:
             return []
     else:
-        # print("hi")
         if(response.json()['phrases']):
             out = [j['tt'] for i in response.json()['phrases'] for j in i['tks'] if j['tg']==2 or j['tg']==1]
-            # print(out)
-            res = [] 
+            res = []
             [res.append(x) for x in out if x not in res]
-            # print(res) 
+            if (string in out):
+                return []
             return res
         else:
             return []
@@ -62,16 +46,19 @@ def options(sent,i,s):
 #                                 'must','ought to','shall','should','will','would']
 articles                 =   'a/an/the'
 demonstrative_pronouns   =   'that/these/those/that'
-interrogative_pronouns   =   'what/which/who/whom/whose/why'
-preposition              =   'in/on/at'
-possesives               =   'my/your/his/her/its/our/their/mine'
-quantifiers              =   'all/every/most/many/much/some/few/little/any/no'
+interrogative_pronouns   =   'what/which/who/whom/whose/why/where'
+preposition              =   'in/on/at/below/beside/above/down'
+possesives_1             =   'my/mine/our'
+possesives_2             =   "your/your's"
+possesives_3             =   "its/our/their/their's/whose"
+quantifiers              =   'all/every/most/many/much/some/few/little/any/no/very'
 
 while True:
     inp = input()
     sent = nltk.word_tokenize(inp)
     suggestions = [[word] for word in sent]
     postag = nltk.pos_tag(nltk.word_tokenize(inp))
+    # print(postag)
     start = time.time()
     for i in range(len(sent)):
         x = sent[i].lower()
@@ -80,30 +67,32 @@ while True:
         elif(sent[i] in demonstrative_pronouns.split('/')):
             suggestions[i] = api(options(sent,i,demonstrative_pronouns)) or [sent[i]]
         elif(sent[i] in preposition.split('/')):
-            suggestions[i] = api(options(sent,i,preposition)) or [sent[i]]
-        elif(sent[i] in possesives.split('/')):
-            suggestions[i] = api(options(sent,i,possesives)) or [sent[i]]
+            x = options(sent,i,preposition)
+            if(i<len(sent)-2):
+                x = x + ' '+sent[i+2]
+            suggestions[i] = api(x) or [sent[i]]
+        elif(sent[i] in possesives_1.split('/')):
+            suggestions[i] = api(options(sent,i,possesives_1),2) or [sent[i]]
+        elif(sent[i] in possesives_2.split('/')):
+            suggestions[i] = api(options(sent,i,possesives_2),2) or [sent[i]]
+        elif(sent[i] in possesives_3.split('/')):
+            suggestions[i] = api(options(sent,i,possesives_3),2) or [sent[i]]
         elif(sent[i] in quantifiers.split('/')):
-            suggestions[i] = api(options(sent,i,quantifiers)) or [sent[i]]
+            suggestions[i] = api(options(sent,i,quantifiers),2) or [sent[i]]
         elif(sent[i] in interrogative_pronouns.split('/')):
             suggestions[i] = api(options(sent,i,interrogative_pronouns)) or [sent[i]]
         elif(postag[i][1].startswith('VB')):
             l1 = list(get_word_forms(wn().lemmatize(sent[i],'v'))['v'])
             verbs_combined = '"'+'"/"'.join(word for word in l1)+'"'
-            # print(verbs_combined)
             if(l1):
-                suggestions[i] = api(options(sent,i,verbs_combined)) or [sent[i]]
+                suggestions[i] = api(options(sent,i,verbs_combined,),2,sent[i]) or [sent[i]]
+        elif(postag[i][1].startswith('NN') or (i<len(sent)-1 and postag[i][1].startswith('JJ') and postag[i+1][1].startswith('NN'))):
+            if(i==0):
+                suggestions[i] = api(articles+' '+options(sent,i,sent[i])) or [sent[i]]
+            else:
+                if(postag[i-1][1].startswith('VB')):
+                    suggestions[i] = [x+' '+sent[i] for x in api(sent[i-1]+' ? '+sent[i],2)] or [sent[i]]
         sent[i] = suggestions[i][0]
     end = time.time()
     print(end-start)
     print(suggestions)
-    # print(' '.join(word for word in suggestions))4
-
-            # l1 = ['a','an','the']
-            # l2 = []
-            # for j in l1:
-            #     t = ThreadWithReturnValue(target=api,args=(options(sent,i,j),))
-            #     t.start()
-            #     l2.append(t.join())
-            # l2 = [api(options(sent,i,j)) for j in articles]
-            # print(api(options(sent,i,articles)))
