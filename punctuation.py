@@ -22,8 +22,8 @@ def correct_sentence(initial):
 	for word in wordlist:
 		words = nltk.word_tokenize(word)
 		tag = nltk.pos_tag(words)
-		print(tag)
-		print(word)
+		#print(tag)
+		#print(word)
 		if(ques_occur==True and (word=='is' or word=='are' or word=='am') and j==x+1):
 			ques=True;
 			# print("it is a question")
@@ -31,25 +31,26 @@ def correct_sentence(initial):
 			# print("yes found a question")
 			ques_occur=True
 			x=j;
-		if(j==0 and (word=='is' or word=='are' or word=='do' or word=='does' or word=='has' or word=='have')):
+		if(j==0 and (word=='is' or word=='are' or word=='do' or word=='does' or word=='has' or word=='have' or word=='am')):
 			ques=True;
 		if(tag[0][0]=='NNP' or j==0 or word=='i' or tag[0][0]=='NNPS'):
 			word = word.capitalize()
 		if(ques==True):
-			if(word=='.' or word=='?'):
+			if(word=='.' or word=='?' or word=='!'):
 				s = s+'?'
+		if(ques==False):
+			if(word=='.' or word=='?' or word=='!'):
+				if(word=='!'):
+					s=s+'!'
+				else:
+					s=s+'.'
 		if(j==0):
 			s = s+word
-		elif(not(word=='.'or word=='?')):
+		elif(not(word=='.'or word=='?' or word=='!')):
 			s = s+' '+word
 		j=j+1
 	return s
 
 
-p = input()
-s = p.lower()
-s1 = correct_sentence(s)
-correction = {}
 
-print(s1)
 
