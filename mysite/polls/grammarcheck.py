@@ -54,7 +54,7 @@ possesives_3             =   "its/our/their/their's/whose"
 quantifiers              =   'all/every/most/many/much/some/few/little/any/no/very'
 
 def checkgrammar(inp):
-    sent = nltk.word_tokenize(inp)
+    sent = nltk.word_tokenize(inp.lower())
     suggestions = [[word] for word in sent]
     postag = nltk.pos_tag(nltk.word_tokenize(inp))
     # print(postag)
