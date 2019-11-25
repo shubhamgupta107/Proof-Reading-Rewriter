@@ -107,6 +107,7 @@ def api(s,mode=1):
 def giveSuggestions(a):
     # print(WORDS['is'])
     start = time.time()
+    a = a.lower()
     tempval = candidates(a)
     sent = word_tokenize(a)
     for i in range(len(sent)):
