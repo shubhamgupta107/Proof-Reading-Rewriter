@@ -112,25 +112,20 @@ def home(request):
     splitwords = []
     suggs = {}
     if (laststop!=-1):
-        for modsen in multsentences:
-            splits = modsen.split(" ")
-            for word in splits:
-                ans = 0
-                for ch in nltk.word_tokenize(word):
-                    if (ch not in relist):
-                        word = ch
-                        ans = giveSuggestions(word)
-                        break
-                if ans and word not in spellignore:
-                    suggs[word] = ans
-                    splitwords.append((False,False,True,word))
-                else:
-                    splitwords.append((False,False,False,word))
-            splitwords[-1] = (splitwords[-1][0],splitwords[-1][1],splitwords[-1][2],splitwords[-1][3]+".")
-        if suggs:
-            firstgram.clear()
-            gramsuggs.clear()
-            correctedgrammar.clear()
+        senttokenized = nltk.word_tokenize(newsen[:laststop+1])
+        spellsugg = giveSuggestions(newsen[:laststop+1])
+        nsplitsen = newsen[:laststop+1].split(" ")
+        for spidx in range(len(senttokenized)):
+            if not(spellsugg[spidx]==[]) and senttokenized[spidx] not in spellignore:
+                splitwords.append((False,False,True,nsplitsen[removenonalpha(spidx,senttokenized)]))
+                suggs[senttokenized[spidx]] = spellsugg[spidx]
+            elif senttokenized[spidx] not in relist:
+                splitwords.append((False,False,False,nsplitsen[removenonalpha(spidx,senttokenized)]))
+            if suggs:
+                firstgram.clear()
+                gramsuggs.clear()
+                correctedgrammar.clear()
+
     if not(suggs) and laststop!=-1:
         #print("Here")
         #if (savesen):
