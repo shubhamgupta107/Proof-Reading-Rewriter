@@ -60,7 +60,7 @@ def candidates(inp):
             words_combined = '"'+'"/"'.join(word for word in l1)+'"'
             suggestions[i] = api(options(sent,i,words_combined),2) or [sent[i]]
         else:
-            suggestions[i] = l1
+            suggestions[i] = l1 or [sent[i]]
         sent[i] = suggestions[i][0]
     return suggestions
 
