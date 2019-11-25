@@ -2,7 +2,29 @@
 	{{ form.as_p }}
 	<input type="submit" value="Submit">
 </form>
-<center><h2>{{ sen }}</h2></center>
+<center><h2>
+	{% for bval,cval,tval,words in splitsen %}
+		{% if cval %}
+			{% if tval %}
+				<u style="text-decoration-color: green">{{ words }}</u>
+			{% else %}
+				{{ words }}
+			{% endif %}
+		{% elif bval %}
+			{% if tval %}
+				<u style="text-decoration-color: blue">{{ words }}</u>
+			{% else %}
+				{{ words }}
+			{% endif %}
+		{% else %}
+			{% if tval %}
+				<u style="text-decoration-color: red">{{ words }}</u>
+			{% else %}
+				{{ words }}
+			{% endif %}
+		{% endif %}
+	{% endfor %}		
+</h2></center>
 {% if suggestions %}
 	{% for s,v in suggestions %}
 		<h3>{{ s }}</h3>
@@ -10,7 +32,49 @@
 			{% for x in v %}
 			<li>
 				<form method="GET">
-					<input name="{{ s }},{{ x }}" hidden>
+					<input name="spell,{{ s }},{{ x }}" hidden>
+					<button type="submit" value='correct,{{ s }},{{ x }}'>{{ x }}</button>
+				</form>
+			</li>
+			{% endfor %}
+			<li>
+				<form method="GET">
+					<input name="spellignore,{{ s }}" hidden>
+					<button type="submit" value='correct,{{ s }}'>Ignore</button>
+				</form>
+			</li>
+		</ul>
+	{% endfor %}
+{% endif %}
+{% if gramsuggs %}
+	{% for s,idx,v in gramsuggs %}
+		<h3>{{ s }}</h3>
+		<ul>
+			{% for x in v %}
+			<li>
+				<form method="GET">
+					<input name="gram,{{ idx }},{{ s }},{{ x }}" hidden>
+					<button type="submit" value='correct,{{ idx }},{{ v }}'>{{ x }}</button>
+				</form>
+			</li>
+			{% endfor %}
+			<li>
+				<form method="GET">
+					<input name="gramignore,{{ idx }},{{ s }}" hidden>
+					<button type="submit" value='correct,{{ idx }},{{ v }}'>Ignore</button>
+				</form>
+			</li>
+		</ul>
+	{% endfor %}
+{% endif %}
+{% if symsuggestions %}
+	{% for s,v in symsuggestions %}
+		<h3>{{ s }}</h3>
+		<ul>
+			{% for x in v %}
+			<li>
+				<form method="GET">
+					<input name="sym,{{ s }},{{ x }}" hidden>
 					<button type="submit" value='correct,{{ s }},{{ x }}'>{{ x }}</button>
 				</form>
 			</li>
@@ -18,4 +82,5 @@
 		</ul>
 	{% endfor %}
 {% endif %}
+
 
