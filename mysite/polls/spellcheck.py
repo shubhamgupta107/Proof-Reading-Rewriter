@@ -10,7 +10,7 @@ for line in dictionary:
     word,freq = line.split()
     WORDS[word] = int(freq)
 # WORDS = Counter(words(open("data.txt").read()))
-
+WORDS['the']=23135851162
 def P(word, N=sum(WORDS.values())): 
     "Probability of `word`."
     return WORDS[word] / N
