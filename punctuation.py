@@ -23,9 +23,9 @@ def correct_sentence(initial):
 	for word in wordlist:
 		words = nltk.word_tokenize(word)
 		tag = nltk.pos_tag(words)
-		#print(tag)
-		#print(word)
-		if(word=='hey' or word=='hi'):
+		print(tag)
+		print(word)
+		if(word=='hey' or word=='hi' or word=='hello'):
 			word = word + ','
 		if(ques_occur==True and (word=='is' or word=='are' or word=='am') and j==x+1):
 			ques=True;
@@ -42,7 +42,10 @@ def correct_sentence(initial):
 			if(word=='.' or word=='?' or word=='!'):
 				s = s+'? '
 				j=-1;
-		if(ques==False):
+				ques=False
+				another_ques_occur=False
+				ques_occur=False
+		if(ques==False and j!=-1):
 			if(word=='.' or word=='?' or word=='!'):
 				if(word=='!'):
 					s=s+'! '
@@ -56,6 +59,7 @@ def correct_sentence(initial):
 			s = s+' '+word
 		j=j+1
 	return s
+
 
 
 
