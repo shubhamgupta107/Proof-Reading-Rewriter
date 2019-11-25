@@ -13,6 +13,7 @@ from nltk.stem.wordnet import WordNetLemmatizer as wn
 
 def correct_sentence(initial):
 	s = '';
+	initial = initial.lower()
 	wordlist = nltk.word_tokenize(initial);
 	j=0;
 	ques_occur = False;
