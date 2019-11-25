@@ -32,18 +32,18 @@ def api(s,mode=1,string=""):
 
 def options(sent,i,s):
     length = len(sent)
-    if(i==0):
+    if(i==0 or (i>0 and not sent[i-1].isalnum())):
         return s+" "+sent[i+1]+' '+sent[i+2]
-    elif(i<=length-2):
+    elif(i<=length-2 and sent[i+1].isalnum()):
         return sent[i-1]+' '+s+' '+sent[i+1]
     else:
         return sent[i-2]+' '+sent[i-1]+' '+s
 
-# auxillary_verbs          =   ['to do', 'do', 'does', 'done', 'did', "didn’t", "doesn’t", 'did not',
-#                                 'be', 'to be', 'been', 'am', 'are', 'is', 'was', 'were', "wasn’t",
-#                                 'was not', "aren’t", 'are not', "weren’t" , 'were not','has', 'have',
-#                                 'having', 'had', " hadn’t", 'had not','can','could','may','might',
-#                                 'must','ought to','shall','should','will','would']
+auxillary_verbs          =   ['to do', 'do', 'does', 'done', 'did', "didn’t", "doesn’t", 'did not',
+                                'be', 'to be', 'been', 'am', 'are', 'is', 'was', 'were', "wasn’t",
+                                'was not', "aren’t", 'are not', "weren’t" , 'were not','has', 'have',
+                                'having', 'had', " hadn’t", 'had not','can','could','may','might',
+                                'must','ought to','shall','should','will','would']
 articles                 =   'a/an/the'
 demonstrative_pronouns   =   'that/these/those/that'
 interrogative_pronouns   =   'what/which/who/whom/whose/why/where'
@@ -81,11 +81,16 @@ while True:
             suggestions[i] = api(options(sent,i,quantifiers),2) or [sent[i]]
         elif(sent[i] in interrogative_pronouns.split('/')):
             suggestions[i] = api(options(sent,i,interrogative_pronouns)) or [sent[i]]
-        elif(postag[i][1].startswith('VB')):
+        elif(sent[i] in auxillary_verbs):
             l1 = list(get_word_forms(wn().lemmatize(sent[i],'v'))['v'])
             verbs_combined = '"'+'"/"'.join(word for word in l1)+'"'
             if(l1):
                 suggestions[i] = api(options(sent,i,verbs_combined,),2,sent[i]) or [sent[i]]
+        elif(postag[i][1].startswith('VB')):
+            l1 = list(get_word_forms(wn().lemmatize(sent[i],'v'))['v'])
+            verbs_combined = '"'+'"/"'.join(word for word in l1)+'"'
+            if(l1):
+                suggestions[i] = api(options(sent,i,verbs_combined,),1,sent[i]) or [sent[i]]
         elif(postag[i][1].startswith('NN') or (i<len(sent)-1 and postag[i][1].startswith('JJ') and postag[i+1][1].startswith('NN'))):
             if(i==0):
                 suggestions[i] = api(articles+' '+options(sent,i,sent[i])) or [sent[i]]
