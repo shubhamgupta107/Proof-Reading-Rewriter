@@ -19,4 +19,4 @@ Overall the conversion rate was quite good and it was able to convert most of th
 ```
 python3 mysite/manage.py runserver
 ```
-- Go to this [link](http://127.0.0.1:8000/) and happy editing/
+- Go to this [link](http://127.0.0.1:8000/) and happy editing
